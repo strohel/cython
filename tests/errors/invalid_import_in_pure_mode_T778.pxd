@@ -1,0 +1,3 @@
+cimport cython.this_module_does_not_exist
+from cython cimport non_existing_member_of_package_or_module
+from non_existing_package_or_module cimport anything
