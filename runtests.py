@@ -1338,21 +1338,17 @@ def subprocess_output(cmd):
 def get_version():
     from Cython.Compiler.Version import version as cython_version
     full_version = cython_version
-    top = os.path.dirname(os.path.abspath(__file__))
+    import Cython as cython_root_package
+    dirname = os.path.dirname
+    top = dirname(dirname(cython_root_package.__file__))
     if os.path.exists(os.path.join(top, '.git')):
         old_dir = os.getcwd()
         try:
             os.chdir(top)
-            head_commit = subprocess_output(['git', 'rev-parse', 'HEAD']).strip()
-            version_commit = subprocess_output(['git', 'rev-parse', cython_version]).strip()
-            diff = subprocess_output(['git', 'diff', '--stat']).strip()
-            if head_commit != version_commit:
-                full_version += " " + head_commit
-            if diff:
-                full_version += ' + uncommitted changes'
+            full_version += " (git " + subprocess_output(['git', 'describe', '--dirty']).strip() + ")"
         finally:
             os.chdir(old_dir)
-    return full_version
+    return full_version + " from " + top
 
 _orig_stdout, _orig_stderr = sys.stdout, sys.stderr
 def flush_and_terminate(status):
